@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+servers=($@)
+tmux="tmux"
+title="tssh"
+
+[ -z "$servers" ] && exit 1
+
+first=${servers[0]}
+$tmux new-window -n $title "tsocks ssh -v $first; sleep 5"
+for s in ${servers[@]:1:((${#servers[@]}))}; do
+    $tmux split-window -t $title "tsocks ssh -v $s; sleep 5"
+done
+$tmux select-layout -t $title tiled
+$tmux setw -t $title synchronize-panes
